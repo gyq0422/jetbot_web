@@ -3,8 +3,6 @@ from flask import Flask, request, jsonify, render_template
 from pynput.keyboard import Controller
 import os
 import threading
-
-
 app = Flask(__name__)
 keyboard = Controller()
 def start_jetbot_keyboard():

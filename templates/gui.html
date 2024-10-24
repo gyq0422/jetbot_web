@@ -5,31 +5,25 @@
     <meta charset="UTF-8">
     <title>Jetbot Control Panel</title>
     <link rel="stylesheet" type="text/css" href="../static/css/gui.css">
-    <script src="../static/js/jquery-3.3.1.min.js"></script>
-    <script src="../static/js/gui.js"></script>
+
 </head>
 <body>
     <div class="container">
         <h1>Jetbot Control Panel</h1>
         <div class="controls">
-            <button class="control-button" id="forward" onclick="sendCommand('forward')">Forward (W)</button>
-            <button class="control-button" id="backward" onclick="sendCommand('backward')">Backward (S)</button>
-            <button class="control-button" id="left" onclick="sendCommand('left')">Turn Left (A)</button>
-            <button class="control-button" id="right" onclick="sendCommand('right')">Turn Right (D)</button>
+            <button class="control-button" id="forward" >Forward (W)</button>
+            <button class="control-button" id="backward" >Backward (S)</button>
+            <button class="control-button" id="left" >Turn Left (A)</button>
+            <button class="control-button" id="right" >Turn Right (D)</button>
         </div>
         <div class="speed-controls">
-            <button class="control-button" id="speed_left_increase" onclick="sendCommand('speed_left_increase')">Increase Left Wheel Speed (U)</button>
-            <button class="control-button" id="speed_left_decrease" onclick="sendCommand('speed_left_decrease')">Decrease Left Wheel Speed (I)</button>
-            <button class="control-button" id="speed_right_increase" onclick="sendCommand('speed_right_increase')">Increase Right Wheel Speed (J)</button>
-            <button class="control-button" id="speed_right_decrease" onclick="sendCommand('speed_right_decrease')">Decrease Right Wheel Speed (K)</button>
+            <button class="control-button" id="speed_left_increase">Increase Left Wheel Speed (U)</button>
+            <button class="control-button" id="speed_left_decrease" >Decrease Left Wheel Speed (I)</button>
+            <button class="control-button" id="speed_right_increase" >Increase Right Wheel Speed (J)</button>
+            <button class="control-button" id="speed_right_decrease" >Decrease Right Wheel Speed (K)</button>
         </div>
     </div>
-    <script>
-        function sendCommand(command) {
-            $.post('/send_command', { command: command }, function(response) {
-                console.log(response);
-            });
-        }
-    </script>
+    <script src="../static/js/jquery-3.3.1.min.js"></script>
+    <script src="../static/js/gui.js"></script>
 </body>
 </html>

@@ -5,7 +5,6 @@ $(document).ready(function () {
         var command = $(this).attr('id');
         sendCommand(command);
     });
-
     // 发送控制命令到服务器的函数
     function sendCommand(command) {
         $.ajax({
