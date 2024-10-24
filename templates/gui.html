@@ -1,47 +1,35 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <title>mbot GUI</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/gui.css') }}"/>
+    <meta charset="UTF-8">
+    <title>Jetbot Control Panel</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="../static/js/jquery-3.3.1.min.js"></script>
+    <script src="../static/js/gui.js"></script>
 </head>
 <body>
-    <table width="100%" cellpadding="2" cellspacing="2" style="border: 1px solid;">
-        <!-- ===== Left Panel ===== -->
-        <tr>
-            <td colspan="1" width="100%">
-                <img src="{{ url_for('video_feed') }}">
-            </td>
-
-            <!-- ===== Right Panel ===== -->
-            <td valign="top" border="1">
-                <h2>mbot Remote Control</h2>
-                <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                    <tr>
-                        <td colspan="3" style="text-align: center;">
-                            <button id="forward" class="control-button">Forward</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td width="33%" style="text-align: center;">
-                            <button id="left" class="control-button">Left</button>
-                        </td>
-                        <td width="33%" style="text-align: center;">
-                            <button id="stop" class="control-button stop-button">Stop</button>
-                        </td>
-                        <td width="33%" style="text-align: center;">
-                            <button id="right" class="control-button">Right</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="3" style="text-align: center;">
-                            <button id="backward" class="control-button">Backward</button>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-    <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/gui.js') }}"></script>
+    <div class="container">
+        <h1>Jetbot Control Panel</h1>
+        <div class="controls">
+            <button class="control-button" id="forward" onclick="sendCommand('forward')">Forward (W)</button>
+            <button class="control-button" id="backward" onclick="sendCommand('backward')">Backward (S)</button>
+            <button class="control-button" id="left" onclick="sendCommand('left')">Turn Left (A)</button>
+            <button class="control-button" id="right" onclick="sendCommand('right')">Turn Right (D)</button>
+        </div>
+        <div class="speed-controls">
+            <button class="control-button" id="speed_left_increase" onclick="sendCommand('speed_left_increase')">Increase Left Wheel Speed (U)</button>
+            <button class="control-button" id="speed_left_decrease" onclick="sendCommand('speed_left_decrease')">Decrease Left Wheel Speed (I)</button>
+            <button class="control-button" id="speed_right_increase" onclick="sendCommand('speed_right_increase')">Increase Right Wheel Speed (J)</button>
+            <button class="control-button" id="speed_right_decrease" onclick="sendCommand('speed_right_decrease')">Decrease Right Wheel Speed (K)</button>
+        </div>
+    </div>
+    <script>
+        function sendCommand(command) {
+            $.post('/send_command', { command: command }, function(response) {
+                console.log(response);
+            });
+        }
+    </script>
 </body>
 </html>
