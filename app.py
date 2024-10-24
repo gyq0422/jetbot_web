@@ -14,7 +14,7 @@ ros_process = None
 def start_roslaunch():
     global ros_process
     if ros_process is None:
-        ros_process = subprocess.Popen(['roslaunch', 'jetbot_ros', 'jetbotmini_keyboard.launch'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
+        ros_process = subprocess.Popen(['roslaunch', 'jetbot_ros', 'jetbotmini_keyboard.launch'], env={'ROS_MASTER_URI': 'http://localhost:11311', 'ROS_PACKAGE_PATH': '/opt/ros/melodic/share:/home/jetson/workspace/catkin_ws/src'}, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
         print("roslaunch 启动成功！")
 
 # 激活终端窗口的函数（适用于 Linux）
@@ -40,7 +40,7 @@ def control():
             # 如果roslaunch进程尚未启动，则启动它
             if ros_process is None:
                 start_roslaunch()
-                time.sleep(1)  # 等待进程启动
+                time.sleep(5)  # 等待进程启动
 
             # 激活终端窗口，确保按键输入到正确的地方
             activate_terminal_window()
