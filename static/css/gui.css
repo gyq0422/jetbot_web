@@ -1,0 +1,23 @@
+.control-button {
+    width: 100px;
+    height: 100px;
+    font-size: 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 10px;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+}
+
+.control-button:hover {
+    background-color: #45a049;
+}
+
+.stop-button {
+    background-color: red;
+}
+
+.stop-button:hover {
+    background-color: darkred;
+}
