@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from importlib import import_module
 import os
-from flask import Flask, render_template, Response
-from robot import Robot
+from flask import Response
+
 
 # import camera driver
 if os.environ.get('CAMERA'):
@@ -12,32 +12,39 @@ else:
 
 # Raspberry Pi camera module (requires picamera package)
 # from camera_pi import Camera
+from teleop_twist_keyboard import handle_command, PublishThread
+from flask import Flask, render_template
+from flask_socketio import SocketIO
+import threading
+import rospy
+from geometry_msgs.msg import Twist
 
-
+# 初始化 Flask 应用和 SocketIO
 app = Flask(__name__)
+socketio = SocketIO(app)
 
-robot = Robot()
+# 初始化 ROS 节点和 Publisher
+rospy.init_node('web_teleop_twist_keyboard', anonymous=True)
 
+speed = rospy.get_param("~speed", 0.5)
+turn = rospy.get_param("~turn", 1.0)
+speed_limit = rospy.get_param("~speed_limit", 1000)
+turn_limit = rospy.get_param("~turn_limit", 1000)
+repeat = rospy.get_param("~repeat_rate", 0.0)
+
+pub_thread = PublishThread(repeat)
 
 @app.route('/')
 def gui():
     return render_template('gui.html')
 
 
-@app.route('/teleop/<opcode>')
-def teleop(opcode):
-    if opcode == 'forward':
-        robot.forward()
-    elif opcode == 'backward':
-        robot.backward()
-    elif opcode == 'left':
-        robot.left()
-    elif opcode == 'right':
-        robot.right()
-    elif opcode == 'stop':
-        robot.stop()
-        
-    return '', 204
+@socketio.on('command')
+def handle_command_from_web(data):
+    global speed, turn
+    command = data['command']
+    speed, turn = handle_command(command, pub_thread, speed, turn, speed_limit, turn_limit)
+
    
 
 def gen(camera):
@@ -56,4 +63,4 @@ def video_feed():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, threaded=True)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
