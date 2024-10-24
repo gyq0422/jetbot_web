@@ -2,24 +2,40 @@
 
 from __future__ import print_function
 
+import os
+import subprocess
 import threading
-import roslib
-import rospy
-from geometry_msgs.msg import Twist
-from geometry_msgs.msg import TwistStamped
-
 import sys
 from select import select
+
+
+# 自动加载 ROS 环境
+def load_ros_environment():
+    ros_setup_path = "/opt/ros/noetic/setup.bash"
+
+    if not os.path.exists(ros_setup_path):
+        raise FileNotFoundError(f"Cannot find setup.bash at {ros_setup_path}. Is ROS installed correctly?")
+
+    command = f"source {ros_setup_path} && env"
+    proc = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True, executable='/bin/bash')
+    output, _ = proc.communicate()
+
+    for line in output.decode('utf-8').splitlines():
+        key, _, value = line.partition("=")
+        os.environ[key] = value
+
+
+# 加载 ROS 环境变量
+load_ros_environment()
+
+import rospy
+from geometry_msgs.msg import Twist
 
 if sys.platform == 'win32':
     import msvcrt
 else:
     import termios
     import tty
-
-roslib.load_manifest('teleop_twist_keyboard')
-
-TwistMsg = Twist
 
 msg = """
 Reading from the keyboard  and Publishing to Twist!
