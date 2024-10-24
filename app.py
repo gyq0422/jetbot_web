@@ -1,7 +1,6 @@
 # Python 文件: app.py
 from flask import Flask, request, jsonify, render_template
 from pynput.keyboard import Controller, Key
-import roslaunch
 import subprocess
 import time
 
@@ -15,10 +14,7 @@ ros_process = None
 def start_roslaunch():
     global ros_process
     if ros_process is None:
-        uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
-        roslaunch.configure_logging(uuid)
-        ros_process = roslaunch.parent.ROSLaunchParent(uuid, ["/home/jetson/workspace/catkin_ws/src/jetbot_ros/scripts/jetbotmini_keyboard.py"])
-        ros_process.start()
+        ros_process = subprocess.Popen(['roslaunch', 'jetbot_ros', 'jetbotmini_keyboard.launch'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
         print("roslaunch 启动成功！")
 
 # 激活终端窗口的函数（适用于 Linux）
