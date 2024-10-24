@@ -1,8 +1,8 @@
 # Python 文件: app.py
 from flask import Flask, request, jsonify, render_template
 from pynput.keyboard import Controller, Key
+import roslaunch
 import subprocess
-import os
 import time
 
 app = Flask(__name__)
@@ -10,6 +10,16 @@ keyboard = Controller()
 
 # 启动roslaunch的全局变量
 ros_process = None
+
+# 启动roslaunch函数
+def start_roslaunch():
+    global ros_process
+    if ros_process is None:
+        uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
+        roslaunch.configure_logging(uuid)
+        ros_process = roslaunch.parent.ROSLaunchParent(uuid, ["/home/jetson/workspace/catkin_ws/src/jetbot_ros/scripts/jetbotmini_keyboard.py"])
+        ros_process.start()
+        print("roslaunch 启动成功！")
 
 # 激活终端窗口的函数（适用于 Linux）
 def activate_terminal_window():
@@ -22,20 +32,19 @@ def activate_terminal_window():
 # 主页路由
 @app.route('/')
 def index():
-    return render_template('gui.html')
+    return render_template('index.html')
 
 # 控制命令的处理路由
-@app.route('/control', methods=['POST'])
+@app.route('/send_command', methods=['POST'])
 def control():
     global ros_process
     command = request.form.get('command')
     if command:
         try:
             # 如果roslaunch进程尚未启动，则启动它
-            if ros_process is None or ros_process.poll() is not None:
-                ros_process = subprocess.Popen(['roslaunch', 'jetbot_ros', 'jetbotmini_keyboard.launch'], shell=False)
+            if ros_process is None:
+                start_roslaunch()
                 time.sleep(1)  # 等待进程启动
-                print("roslaunch 启动成功！")  # 启动成功的提示
 
             # 激活终端窗口，确保按键输入到正确的地方
             activate_terminal_window()
