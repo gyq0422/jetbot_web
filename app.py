@@ -23,6 +23,7 @@ threading.Thread(target=start_jetbot_keyboard, daemon=True).start()
 def index():
     return render_template('gui.html')
 
+@app.route('/control', methods=['POST'])
 # 处理前端的控制命令
 @socketio.on('move_command')
 def handle_move_command(command):
