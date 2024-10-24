@@ -1,15 +1,23 @@
 # Python 文件: app.py
 from flask import Flask, request, jsonify, render_template
-from pynput.keyboard import Controller
+from pynput.keyboard import Controller, Key
+import subprocess
 import os
-import threading
+import time
+
 app = Flask(__name__)
 keyboard = Controller()
-def start_jetbot_keyboard():
-    os.system("roslaunch jetbot_ros jetbotmini_keyboard.launch")
 
-# 在一个新线程中启动键盘控制脚本，以免阻塞Flask服务器
-threading.Thread(target=start_jetbot_keyboard, daemon=True).start()
+# 启动roslaunch的全局变量
+ros_process = None
+
+# 激活终端窗口的函数（适用于 Linux）
+def activate_terminal_window():
+    try:
+        # 使用 wmctrl 激活特定终端窗口
+        subprocess.run(['wmctrl', '-a', 'jetbot_terminal'], check=True)
+    except FileNotFoundError:
+        print("wmctrl 工具未安装，无法激活终端窗口。")
 
 # 主页路由
 @app.route('/')
@@ -19,9 +27,19 @@ def index():
 # 控制命令的处理路由
 @app.route('/control', methods=['POST'])
 def control():
+    global ros_process
     command = request.form.get('command')
     if command:
         try:
+            # 如果roslaunch进程尚未启动，则启动它
+            if ros_process is None or ros_process.poll() is not None:
+                ros_process = subprocess.Popen(['roslaunch', 'jetbot_ros', 'jetbotmini_keyboard.launch'], shell=False)
+                time.sleep(1)  # 等待进程启动
+                print("roslaunch 启动成功！")  # 启动成功的提示
+
+            # 激活终端窗口，确保按键输入到正确的地方
+            activate_terminal_window()
+
             # 根据命令执行相应的按键操作
             if command == 'forward':
                 keyboard.press('w')
@@ -57,4 +75,6 @@ def control():
         return jsonify({'status': 'error', 'message': 'No command provided'}), 400
 
 if __name__ == '__main__':
+    print("服务器启动中...")
     app.run(host='0.0.0.0', port=5000, debug=True)
+    print("服务器启动成功，可以在局域网中访问。")
